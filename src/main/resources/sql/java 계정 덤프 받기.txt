@@ -1,0 +1,15 @@
+-- 가끔식 java.dmp 파일을 jsp 임시 폴더에 넣도록 하겠습니다. 
+[system 에서 작업] 
+-- 기존 java 계정 삭제하면서 관련 객체 사그리 삭제 
+drop user java cascade ;
+-- 기존 java 계정 생성 
+create user java identified by oracle;
+grant connect, resource, create view to java;
+-- grant dba to java 
+
+[java.dmp 덤프파일 올리기 ]
+imp java/oracle file=java.dmp 
+-- 위 임포트가 안되면 아래내용으로   
+
+imp system/oracle file=java.dmp  fromuser=java touser=java
+

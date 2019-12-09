@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- context-main.xml : 기본 설정 componet scan  -->
+	<!-- context-datasource.xml DataSource, MyBatis  -->
+	<!-- context-transaction.xml transaction 설정   -->
+	
+	<!-- @Controller 를 제외한 모든 빈을 등록  -->
+	<context:component-scan base-package="com.study">
+		<context:exclude-filter type="annotation"
+		 expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+</beans>

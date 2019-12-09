@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<!-- step2-scan.xml -->
+	<util:list id="devices">
+		<value>Color : Red</value>
+		<value>Price : 999,000</value>
+	</util:list>
+	<util:map id="address">
+		<entry key="113" value="간첩신고" />
+		<entry key="119" value="응급의료전화" />
+		<entry key="719-8850" value="넥스트" />
+	</util:map>
+	
+	<!-- annotation 기잔 빈검색 등록, 의존 객체 주입, life-cycle 관련 설정을 자동으로 처리해준다.  -->
+	<context:component-scan base-package="com.test.di.step2" />
+	
+	
+</beans>

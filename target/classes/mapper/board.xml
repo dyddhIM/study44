@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace : DAO의 인터페이스 풀네임으로 
+	id : 해당 인터페이스의 메서드명 
+ -->  
+<mapper namespace="com.study.board.dao.IBoardDao">
+	<sql id="searchCondition">
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+		 	<choose>
+		 		<when test='searchType == "T"'>
+		 			AND bo_title LIKE '%' || #{searchWord} || '%'
+		 		</when>
+		 		<when test='searchType.equals("W")'>
+		 			AND bo_writer LIKE '%' || #{searchWord} || '%'
+		 		</when>
+		 		<when test='searchType eq "C"'>
+		 			AND bo_content LIKE '%' || #{searchWord} || '%'
+		 		</when>
+		 		<otherwise>		 		
+		 			AND (    bo_title   LIKE '%' || #{searchWord} || '%'
+		 			      OR bo_writer  LIKE '%' || #{searchWord} || '%'
+		 			      OR bo_content LIKE '%' || #{searchWord} || '%'
+		 			     ) 
+		 		</otherwise>
+		 	</choose>
+		 </if>		 
+	</sql>
+
+	<select id="selectBoardCount"
+	        parameterType="com.study.board.vo.BoardSearchVO" 
+	        resultType="int"     >
+	 	SELECT count(*) as cnt       
+		  FROM board     
+		 WHERE bo_del_yn = 'N'	
+		<include refid="searchCondition" />
+	</select>
+	
+	<select id="selectBoardList" 
+	        parameterType="com.study.board.vo.BoardSearchVO" 
+	        resultType="com.study.board.vo.BoardVO"  >	
+	    <include refid="common.PAGING_PREFIX" />       
+		SELECT bo_no,                                                                 
+               bo_title,                                                              
+               bo_writer,                                                             
+               bo_pass,                                                               
+               bo_hit,                                                                
+               bo_ip,                                                                 
+               TO_CHAR(bo_reg_date, 'yyyy-mm-dd') AS bo_reg_date,                     
+               TO_CHAR(bo_mod_date, 'yyyy-mm-dd') AS bo_mod_date,                     
+               bo_del_yn,                                                             
+               bo_class,                                                              
+               (select com_nm from com_code where bo_class = com_cd ) as bo_class_nm  
+          FROM BOARD                                                                  
+         WHERE BO_DEL_YN = 'N'   
+         <include refid="searchCondition" /> 
+         ORDER BY bo_no DESC 
+        <include refid="common.PAGING_SUFFIX" />                                  
+	</select>
+	
+	
+  <insert id="insertBoard"  parameterType="com.study.board.vo.BoardVO">
+  	<selectKey keyProperty="bo_no" resultType="int" order="BEFORE">
+		select seq_board.nextval from dual
+  	</selectKey>
+  		INSERT INTO board (
+				bo_no,       bo_title,     bo_writer,     bo_pass,   
+				bo_content,  bo_hit,       bo_ip,         bo_reg_date,
+				bo_mod_date, bo_del_yn, bo_class      
+		     ) VALUES (    
+				#{bo_no},    #{bo_title},   #{bo_writer},  #{bo_pass},
+				#{bo_content},      0,             #{bo_ip},       sysdate,
+				null,               'N',           #{bo_class}
+		     )
+  </insert>
+	<select id="selectBoard" parameterType="int" 
+			resultType="com.study.board.vo.BoardVO">
+		SELECT bo_no,
+			   bo_title,
+			   bo_writer,
+			   bo_pass,
+			   bo_content,
+			   bo_hit,
+			   bo_ip,
+			   TO_CHAR(bo_reg_date, 'YYYY.MM.DD') AS BO_reg_date,
+			   TO_CHAR(bo_mod_date, 'YYYY.MM.DD') AS BO_mod_date,
+			   bo_del_yn,
+			   bo_class 
+		  FROM Board
+         WHERE bo_no = #{bo_no}
+	</select>
+
+	<update id="increaseBoardCount" parameterType="int">
+		UPDATE board
+   		   SET bo_hit = bo_hit + 1 
+	 	 WHERE bo_no  = #{bo_no}		
+	</update>
+	
+	<update id="updateBoard" parameterType="com.study.board.vo.BoardVO">
+		UPDATE board                  
+    	   SET bo_title    = #{bo_title}         
+     	     , bo_writer   = #{bo_writer}          
+     	     , bo_content  = #{bo_content}         
+     	     , bo_ip       = #{bo_ip}              
+     	     , bo_mod_date = sysdate  
+     	     , bo_class    = #{bo_class}           
+ 	     WHERE bo_no   = #{bo_no}            
+   		   AND bo_pass = #{bo_pass}            
+	</update>
+
+	<delete id="deleteBoard" parameterType="com.study.board.vo.BoardVO">		
+		DELETE FROM board 
+	     WHERE bo_no   = #{bo_no} 
+		   AND bo_pass = #{bo_pass} 	
+	</delete>
+	
+	<!-- 프리미티브형 배열일때 array 로 해주세요   -->
+	<delete id="deleteBoardChecked" >
+		DELETE FROM board
+		<where>
+			<if test="array == null">
+				1 = 0 
+			</if>
+			<if test="array != null">	
+				<foreach collection="array" item="no" 
+				         open="bo_no in (" close=")" separator="," >
+					#{no}         
+			   </foreach>
+			 </if>
+		</where>
+	</delete>
+	
+</mapper>
+
+
+
+
+

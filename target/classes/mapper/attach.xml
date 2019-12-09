@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- attach.xml -->  
+<mapper namespace="com.study.attach.dao.IAttachDao">
+	
+	<select id="selectAttach" parameterType="int" 
+	        resultType="com.study.attach.vo.AttachVO">
+		SELECT atch_no,
+		       atch_parent_no,
+		       atch_category,
+		       atch_file_name,
+		       atch_original_name,
+		       atch_file_size,
+		       atch_fancy_size,
+		       atch_content_type,
+		       atch_path,
+		       atch_down_cnt,
+		       atch_del_yn,
+		       atch_reg_date
+		  FROM attach
+		 WHERE atch_no = #{atch_no} 
+		   AND atch_del_yn = 'N'
+	</select>
+	
+	<select id="selectAttachByParentNo" parameterType="int"
+	        resultType="com.study.attach.vo.AttachVO"  >
+		SELECT atch_no,
+		       atch_original_name,		       
+		       atch_fancy_size,
+		       atch_down_cnt,
+		       TO_CHAR(atch_reg_date,'YY.MM.DD HH24:MI') AS atch_reg_date
+		  FROM attach
+		 WHERE atch_parent_no = #{parent_no} 
+		   AND atch_del_yn = 'N'
+	</select>
+	
+	<!-- regexpr \w = [0-9a-zA-Z_] (\w+)  #{$1}  -->
+	<insert id="insertAttach" parameterType="com.study.attach.vo.AttachVO">
+		INSERT INTO attach (
+                 atch_no,         atch_parent_no,     atch_category,
+                 atch_file_name,  atch_original_name, atch_file_size,
+                 atch_fancy_size, atch_content_type,  atch_path,
+                 atch_down_cnt,   atch_del_yn,        atch_reg_date
+               ) VALUES (
+                 seq_attach.NEXTVAL, #{atch_parent_no},     #{atch_category},
+                 #{atch_file_name},  #{atch_original_name}, #{atch_file_size},
+                 #{atch_fancy_size}, #{atch_content_type},  #{atch_path},
+                 0,   'N',   SYSDATE
+               )
+	</insert>
+	
+	<update id="increaseDownloadCount" parameterType="int">
+		UPDATE attach
+		   SET atch_down_cnt = atch_down_cnt + 1
+		 WHERE atch_no = #{atch_no}
+	</update>
+	
+</mapper>
+
+
+
+
+

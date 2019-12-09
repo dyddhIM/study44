@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 1. XML 로 설정 -->
+	<bean name="man" class="com.test.di.step1.DiMan" >
+		<!-- setter에 phone 주입 -->
+		<property name="name" value="아이유" />
+		<property name="phone" ref="phone1" />
+	</bean>
+	
+	<bean name="phone" class="com.test.di.step1.SamsungPhone" />
+	<bean name="phone1" class="com.test.di.step1.IPhone" />
+	
+	
+
+</beans>

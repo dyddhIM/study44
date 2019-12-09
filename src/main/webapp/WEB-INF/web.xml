@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	
+	<!-- 부모 컨테이너 설정파일 
+		classpath:  = /WEB-INF/classes  
+	 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/context-*.xml</param-value>
+	</context-param>
+	
+	<!-- 부모 컨테이너 (다른 컨테이너에 객체를 제공 가능)  -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>	
+	</listener>
+
+	<!-- 사용자가 만든 서블릿 등록  -->
+	<servlet>
+		<servlet-name>driverLoader</servlet-name>
+		<servlet-class>com.study.servlet.DriverLoader</servlet-class>
+		<load-on-startup>1</load-on-startup>	
+	</servlet>
+
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>mvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- // 설정파일은 기본적으로 WEB-INF/해당서블릿이름 + -servlet.xml 로 인식 
+		     // WEB-INF/appServlet-servlet.xml 
+		     // 접두어 classpath: 사용하실수 있어요 
+		     // * 도 사용가능 *-context.xml  
+		 -->		
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring/mvc-servlet.xml</param-value>
+		</init-param>		 
+		<load-on-startup>2</load-on-startup>
+		<multipart-config>			
+			<max-file-size>104857600</max-file-size> <!-- 파일당 제한 100M  -->
+			<max-request-size>1048576000</max-request-size> <!-- 전체 제한 , 1G  -->
+			<file-size-threshold>8192</file-size-threshold> <!-- 메모리에 보관 사이즈  -->
+		</multipart-config>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>mvc</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>com.study.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>		
+	</filter-mapping>
+
+</web-app>

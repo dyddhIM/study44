@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- context-transaction.xml Transaction 설정   -->
+	<!-- 트랜잭션 매니저 설정  -->
+	<bean id="transactionManager" 
+	     class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 트랜잭션 어드바이스(스프링에서제공) 설정  -->
+	<!-- select*, find* 일반적으로 조회성 이므로 읽기전용 
+	     read-only="true" 이면 읽기전용인데.. 제대로 동작을 안합니다.
+	     읽기 전용인데 그 메서드에서 변경쿼리가 있으면 예외가 발생할 수도 있고
+	                  또는 처리가 될때도 있습니다.  
+	    
+		 기본적은 rollback은 RuntimeException 계열만 됩니다.	
+		     일반 예외도 rollback 하려면 설정하셔야 합니다. . 
+	 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager" >
+		<tx:attributes>
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="*"  rollback-for="Exception" />
+		</tx:attributes>	
+	</tx:advice>
+	
+	<!-- 트랜잭션 포인트컷 설정  -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" 
+		     pointcut="execution(public * com.study.*.service.*Impl.*(..))"/>
+	</aop:config>
+	
+	
+</beans>

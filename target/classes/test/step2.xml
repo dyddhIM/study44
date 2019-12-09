@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 빈등록 id, name : id는 고유한 이름규칙에 따라서 작성 name 은 "/member/memberList.do" 
+		, 또는 "man oldMan" -->
+	<!-- scope 이 singleton이 아니면 객체관리를 컨테이너가 못함
+	    , destroy-method 호출 안됨 -->	
+	<bean id="man" class="com.test.di.step2.DiMan" 
+	       init-method="myInit" destroy-method="myClose" scope="prototype"  >
+		<property name="name">
+			<value>홍길동</value>
+		</property>
+		<property name="phone">
+			<ref bean="phone" />
+		</property>
+	</bean>
+
+	<bean id="phone" class="com.test.di.step2.IPhone">
+		<constructor-arg name="owner">
+			<value>홍길동</value>
+		</constructor-arg>
+		<constructor-arg name="address">
+			<map>
+				<entry>
+					<key>
+						<value>113</value>
+					</key>
+					<value>간첩신고</value>
+				</entry>
+				<entry>
+					<key>
+						<value>119</value>
+					</key>
+					<value>응급의료전화</value>
+				</entry>
+			</map>
+		</constructor-arg>
+		<property name="deviceInfos">
+			<list>
+				<value>Color : white</value>
+				<value>Price : 1,000,000</value>
+			</list>
+		</property>
+
+		<!-- device.add("Color : white"); device.add("Price : 1,000,000"); -->
+
+	</bean>
+
+
+</beans>
